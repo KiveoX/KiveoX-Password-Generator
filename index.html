@@ -1,0 +1,722 @@
+<!--
+  Created by KiveoX on 23/06/2026
+  Part of the KiveoX project
+  Professional password generator
+  With extra security features
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KiveoX | Password Generator</title>
+
+    <style>
+      :root {
+        --background: #120204;
+        --card: rgba(20, 5, 8, 0.82);
+        --text: #f8fafc;
+        --secondary: #cbd5e1;
+        --accent: #e30613;
+        --accent-light: #ff4d5a;
+        --border: rgba(227, 6, 19, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background: var(--background);
+        color: var(--text);
+        font-family:
+          Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          linear-gradient(rgba(227, 6, 19, 0.1) 1px, transparent 1px),
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.07) 1px,
+            transparent 1px
+          );
+        background-size: 48px 48px;
+        animation: moveGrid 18s linear infinite;
+        z-index: -4;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 18% 20%,
+            rgba(227, 6, 19, 0.36),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 82% 28%,
+            rgba(255, 255, 255, 0.16),
+            transparent 34%
+          ),
+          radial-gradient(
+            circle at 50% 85%,
+            rgba(227, 6, 19, 0.22),
+            transparent 35%
+          );
+        filter: blur(22px);
+        animation: moveLight 10s ease-in-out infinite alternate;
+        z-index: -3;
+      }
+
+      .background-animation {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        z-index: -2;
+      }
+
+      .background-animation span {
+        position: absolute;
+        bottom: -80px;
+        width: 14px;
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(227, 6, 19, 0.85);
+        box-shadow:
+          0 0 20px rgba(227, 6, 19, 0.95),
+          0 0 45px rgba(255, 255, 255, 0.28);
+        animation: floatParticles 12s linear infinite;
+      }
+
+      .background-animation span:nth-child(1) {
+        left: 8%;
+        animation-delay: 0s;
+        animation-duration: 11s;
+      }
+
+      .background-animation span:nth-child(2) {
+        left: 24%;
+        width: 9px;
+        height: 9px;
+        animation-delay: 2s;
+        animation-duration: 14s;
+      }
+
+      .background-animation span:nth-child(3) {
+        left: 42%;
+        width: 18px;
+        height: 18px;
+        animation-delay: 4s;
+        animation-duration: 10s;
+      }
+
+      .background-animation span:nth-child(4) {
+        left: 63%;
+        animation-delay: 1s;
+        animation-duration: 13s;
+      }
+
+      .background-animation span:nth-child(5) {
+        left: 79%;
+        width: 10px;
+        height: 10px;
+        animation-delay: 3s;
+        animation-duration: 15s;
+      }
+
+      .background-animation span:nth-child(6) {
+        left: 92%;
+        width: 20px;
+        height: 20px;
+        animation-delay: 5s;
+        animation-duration: 12s;
+      }
+
+      .light-stripe {
+        position: fixed;
+        inset: -30%;
+        background: linear-gradient(
+          115deg,
+          transparent 35%,
+          rgba(255, 255, 255, 0.08) 45%,
+          rgba(227, 6, 19, 0.18) 50%,
+          rgba(255, 255, 255, 0.08) 55%,
+          transparent 65%
+        );
+        transform: translateX(-45%) rotate(8deg);
+        animation: lightStripe 9s ease-in-out infinite;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      main {
+        position: relative;
+        width: min(92%, 780px);
+        padding: 2rem;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        box-shadow:
+          0 35px 90px rgba(0, 0, 0, 0.5),
+          0 0 45px rgba(227, 6, 19, 0.12);
+        overflow: hidden;
+      }
+
+      main::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 28px;
+        padding: 1px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.75),
+          rgba(227, 6, 19, 0.8),
+          rgba(255, 255, 255, 0.2)
+        );
+        mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .badge {
+        padding: 0.45rem 0.7rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        color: #fecaca;
+        background: rgba(227, 6, 19, 0.12);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.05;
+      }
+
+      .project-note {
+        margin-top: 1rem;
+        color: #fca5a5;
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .subtitle {
+        margin-top: 0.8rem;
+        color: var(--secondary);
+        line-height: 1.65;
+      }
+
+      label {
+        display: block;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--secondary);
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.95rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        background: rgba(2, 6, 23, 0.78);
+        color: var(--text);
+        font-size: 1rem;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: var(--accent-light);
+        box-shadow: 0 0 0 4px rgba(227, 6, 19, 0.18);
+      }
+
+      .hint {
+        margin-top: 0.55rem;
+        color: #d1d5db;
+        font-size: 0.95rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+      }
+
+      button {
+        cursor: pointer;
+        border: 0;
+        border-radius: 14px;
+        padding: 0.95rem 1.2rem;
+        font-weight: 800;
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--accent), #9f0712);
+        box-shadow: 0 12px 28px rgba(227, 6, 19, 0.28);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          filter 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 36px rgba(227, 6, 19, 0.36);
+        filter: brightness(1.08);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button.secondary {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .security-box {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.58);
+      }
+
+      .security-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        color: #fecaca;
+        font-weight: 800;
+      }
+
+      .strength-bar {
+        margin-top: 0.8rem;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+
+      #strengthFill {
+        width: 0%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #ef4444, #f97316, #22c55e);
+        transition: width 0.35s ease;
+      }
+
+      .security-note {
+        margin-bottom: 0;
+        color: #d1d5db;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      output {
+        display: block;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        min-height: 150px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.78);
+        white-space: pre-wrap;
+        word-break: break-all;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        line-height: 1.6;
+      }
+
+      .status {
+        margin-top: 0.8rem;
+        color: #fecaca;
+        min-height: 1.5rem;
+        font-weight: 600;
+      }
+
+      @keyframes moveGrid {
+        from {
+          background-position: 0 0;
+        }
+
+        to {
+          background-position: 48px 48px;
+        }
+      }
+
+      @keyframes moveLight {
+        from {
+          transform: scale(1) rotate(0deg);
+          opacity: 0.72;
+        }
+
+        to {
+          transform: scale(1.16) rotate(7deg);
+          opacity: 1;
+        }
+      }
+
+      @keyframes floatParticles {
+        from {
+          transform: translateY(0) scale(0.75);
+          opacity: 0;
+        }
+
+        20% {
+          opacity: 1;
+        }
+
+        to {
+          transform: translateY(-115vh) scale(1.45);
+          opacity: 0;
+        }
+      }
+
+      @keyframes lightStripe {
+        0% {
+          transform: translateX(-55%) rotate(8deg);
+          opacity: 0;
+        }
+
+        35% {
+          opacity: 1;
+        }
+
+        100% {
+          transform: translateX(55%) rotate(8deg);
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 620px) {
+        main {
+          padding: 1.4rem;
+        }
+
+        .header {
+          flex-direction: column;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="background-animation" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="light-stripe" aria-hidden="true"></div>
+
+    <!-- Red-and-white mode as a small design reference -->
+
+    <main>
+      <div class="header">
+        <div>
+          <h1>KiveoX Password Generator</h1>
+          <p class="project-note">KiveoX Secure Tool · Red-and-white mode</p>
+        </div>
+
+        <div class="badge">KiveoX API</div>
+      </div>
+
+      <p class="subtitle">
+        This tool creates a secure random password using modern
+        browser security technology. The password is also URL-encoded
+        so it can be safely used in a Supabase connection string or for
+        private purposes.
+      </p>
+
+      <label for="passwordLength">Password length</label>
+      <input
+        id="passwordLength"
+        type="number"
+        min="30"
+        max="288"
+        value="300"
+        aria-describedby="passwordLengthHint"
+      />
+
+	<p id="passwordLengthHint" class="hint">
+	  Recommendation: 30 characters for secure credentials. For maximum security, 300 characters can be used.
+	</p>
+
+      <div class="actions">
+        <button id="generateButton">Generate password</button>
+        <button id="copyButton" class="secondary">
+          Copy URL-encoded password
+        </button>
+      </div>
+
+      <div class="security-box">
+        <div class="security-header">
+          <span>Extra security</span>
+          <span id="strengthText">No password yet</span>
+        </div>
+
+        <div class="strength-bar" aria-hidden="true">
+          <div id="strengthFill"></div>
+        </div>
+
+        <p class="security-note">
+          The password is generated locally in the browser, is not stored, and is not
+          sent to any server. The output is automatically cleared after 2 minutes.
+        </p>
+      </div>
+
+      <output id="output">
+Click “Generate password” to create a secure password.
+      </output>
+
+      <div class="actions">
+        <button id="toggleButton" class="secondary">Show password</button>
+        <button id="clearButton" class="secondary">Clear output</button>
+      </div>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+	  
+	  
+	  <footer class="footer">
+		  <p>© 2026 KiveoX Training Forge. Forge your future. All rights reserved.</p>
+		  <p>
+			<a href="impressum.html">Impressum</a> ·
+			<a href="datenschutz.html">Datenschutz</a> ·
+			<a href="mailto:kiveoxforfuture@gmail.com">Kontakt</a>
+		  </p>
+		</footer>
+    </main>
+	  
+    </main>
+
+    <script>
+      const passwordCharacters = [
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "abcdefghijklmnopqrstuvwxyz",
+        "0123456789",
+        "!@#$%^&*()_+-=[]{};:,.?~",
+      ].join("");
+
+      const passwordLengthInput = document.getElementById("passwordLength");
+      const output = document.getElementById("output");
+      const status = document.getElementById("status");
+
+      const generateButton = document.getElementById("generateButton");
+      const copyButton = document.getElementById("copyButton");
+      const toggleButton = document.getElementById("toggleButton");
+      const clearButton = document.getElementById("clearButton");
+
+      const strengthText = document.getElementById("strengthText");
+      const strengthFill = document.getElementById("strengthFill");
+
+      let latestPassword = "";
+      let latestEncodedPassword = "";
+      let passwordIsVisible = false;
+      let autoClearTimer = null;
+
+      function getSecureRandomIndex(maximum) {
+        const randomValues = new Uint32Array(1);
+        const maximumValidValue = Math.floor(0xffffffff / maximum) * maximum;
+
+        let randomValue;
+
+        do {
+          crypto.getRandomValues(randomValues);
+          randomValue = randomValues[0];
+        } while (randomValue >= maximumValidValue);
+
+        return randomValue % maximum;
+      }
+
+      function generatePassword(length) {
+        return Array.from({ length }, () => {
+          const index = getSecureRandomIndex(passwordCharacters.length);
+          return passwordCharacters[index];
+        }).join("");
+      }
+
+      function maskPassword(password) {
+        return "•".repeat(password.length);
+      }
+
+      function calculatePasswordStrength(password) {
+        let points = 0;
+
+        if (password.length >= 24) points += 25;
+        if (password.length >= 64) points += 25;
+        if (/[A-Z]/.test(password)) points += 10;
+        if (/[a-z]/.test(password)) points += 10;
+        if (/[0-9]/.test(password)) points += 10;
+        if (/[^A-Za-z0-9]/.test(password)) points += 20;
+
+        return Math.min(points, 100);
+      }
+
+      function showPasswordStrength(password) {
+        const strength = calculatePasswordStrength(password);
+
+        strengthFill.style.width = `${strength}%`;
+
+        if (strength < 50) {
+          strengthText.textContent = "Weak";
+        } else if (strength < 80) {
+          strengthText.textContent = "Strong";
+        } else {
+          strengthText.textContent = "Very strong";
+        }
+      }
+
+      function updateOutput() {
+        if (!latestPassword) {
+          output.textContent =
+            "Click “Generate password” to create a secure password.";
+          return;
+        }
+
+        const visiblePassword = passwordIsVisible
+          ? latestPassword
+          : maskPassword(latestPassword);
+
+        output.textContent =
+          `Password:\n${visiblePassword}\n\n` +
+          `URL-encoded for the connection string:\n${latestEncodedPassword}`;
+      }
+
+      function startAutoClearTimer() {
+        clearTimeout(autoClearTimer);
+
+        autoClearTimer = setTimeout(() => {
+          latestPassword = "";
+          latestEncodedPassword = "";
+          passwordIsVisible = false;
+
+          strengthFill.style.width = "0%";
+          strengthText.textContent = "Automatically cleared";
+          toggleButton.textContent = "Show password";
+
+          updateOutput();
+
+          status.textContent =
+            "For security reasons, the output was automatically cleared.";
+        }, 120000);
+      }
+
+      function clearOutput() {
+        clearTimeout(autoClearTimer);
+
+        latestPassword = "";
+        latestEncodedPassword = "";
+        passwordIsVisible = false;
+
+        strengthFill.style.width = "0%";
+        strengthText.textContent = "Cleared";
+        toggleButton.textContent = "Show password";
+
+        updateOutput();
+        status.textContent = "Output has been cleared.";
+      }
+
+      function togglePasswordVisibility() {
+        if (!latestPassword) {
+          status.textContent = "Please generate a password first.";
+          return;
+        }
+
+        passwordIsVisible = !passwordIsVisible;
+
+        toggleButton.textContent = passwordIsVisible
+          ? "Hide password"
+          : "Show password";
+
+        updateOutput();
+      }
+
+      function generateSecurePassword() {
+        const length = Number(passwordLengthInput.value);
+
+        if (!Number.isInteger(length) || length < 30 || length > 300) {
+          status.textContent =
+            "Please choose a length between 30 and 300.";
+          return;
+        }
+
+        const password = generatePassword(length);
+
+        latestPassword = password;
+        latestEncodedPassword = encodeURIComponent(password);
+        passwordIsVisible = false;
+
+        showPasswordStrength(password);
+        updateOutput();
+        startAutoClearTimer();
+
+        toggleButton.textContent = "Show password";
+
+        status.textContent =
+          "Secure password has been created. The display will be automatically cleared after 2 minutes.";
+      }
+
+      async function copyEncodedPassword() {
+        if (!latestEncodedPassword) {
+          status.textContent = "Please generate a password first.";
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(latestEncodedPassword);
+          status.textContent = "URL-encoded password has been copied.";
+        } catch {
+          status.textContent =
+            "Copying is not possible. Please select the password manually.";
+        }
+      }
+
+      generateButton.addEventListener("click", generateSecurePassword);
+      copyButton.addEventListener("click", copyEncodedPassword);
+      toggleButton.addEventListener("click", togglePasswordVisibility);
+      clearButton.addEventListener("click", clearOutput);
+    </script>
+  </body>
+</html>
