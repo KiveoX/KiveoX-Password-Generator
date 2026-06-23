@@ -365,6 +365,21 @@
         font-weight: 600;
       }
 
+      .footer {
+        margin-top: 2rem;
+        color: var(--secondary);
+        font-size: 0.9rem;
+      }
+
+      .footer a {
+        color: #93c5fd;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
       @keyframes moveGrid {
         from {
           background-position: 0 0;
@@ -420,6 +435,11 @@
       }
 
       @media (max-width: 620px) {
+        body {
+          overflow: auto;
+          padding: 1rem 0;
+        }
+
         main {
           padding: 1.4rem;
         }
@@ -451,8 +471,6 @@
 
     <div class="light-stripe" aria-hidden="true"></div>
 
-    <!-- Red-and-white mode as a small design reference -->
-
     <main>
       <div class="header">
         <div>
@@ -464,10 +482,9 @@
       </div>
 
       <p class="subtitle">
-        This tool creates a secure random password using modern
-        browser security technology. The password is also URL-encoded
-        so it can be safely used in a Supabase connection string or for
-        private purposes.
+        This tool creates a secure random password using modern browser security
+        technology. The password is also URL-encoded so it can be safely used in
+        a Supabase connection string or for private purposes.
       </p>
 
       <label for="passwordLength">Password length</label>
@@ -475,14 +492,15 @@
         id="passwordLength"
         type="number"
         min="30"
-        max="288"
+        max="300"
         value="300"
         aria-describedby="passwordLengthHint"
       />
 
-	<p id="passwordLengthHint" class="hint">
-	  Recommendation: 30 characters for secure credentials. For maximum security, 300 characters can be used.
-	</p>
+      <p id="passwordLengthHint" class="hint">
+        Recommendation: 30 characters for secure credentials. For maximum
+        security, 300 characters can be used.
+      </p>
 
       <div class="actions">
         <button id="generateButton">Generate password</button>
@@ -502,8 +520,9 @@
         </div>
 
         <p class="security-note">
-          The password is generated locally in the browser, is not stored, and is not
-          sent to any server. The output is automatically cleared after 2 minutes.
+          The password is generated locally in the browser, is not stored, and is
+          not sent to any server. The output is automatically cleared after 2
+          minutes.
         </p>
       </div>
 
@@ -517,18 +536,18 @@ Click “Generate password” to create a secure password.
       </div>
 
       <div id="status" class="status" role="status" aria-live="polite"></div>
-	  
-	  
-	  <footer class="footer">
-		  <p>© 2026 KiveoX Training Forge. Forge your future. All rights reserved.</p>
-		  <p>
-			<a href="impressum.html">Impressum</a> ·
-			<a href="datenschutz.html">Datenschutz</a> ·
-			<a href="mailto:kiveoxforfuture@gmail.com">Kontakt</a>
-		  </p>
-		</footer>
-    </main>
-	  
+
+      <footer class="footer">
+        <p>
+          © 2026 KiveoX Training Forge. Forge your future. All rights reserved.
+        </p>
+
+        <p>
+          <a href="impressum.html">Impressum</a> ·
+          <a href="datenschutz.html">Datenschutz</a> ·
+          <a href="mailto:kiveoxforfuture@gmail.com">Kontakt</a>
+        </p>
+      </footer>
     </main>
 
     <script>
@@ -677,8 +696,7 @@ Click “Generate password” to create a secure password.
         const length = Number(passwordLengthInput.value);
 
         if (!Number.isInteger(length) || length < 30 || length > 300) {
-          status.textContent =
-            "Please choose a length between 30 and 300.";
+          status.textContent = "Please choose a length between 30 and 300.";
           return;
         }
 
@@ -690,7 +708,7 @@ Click “Generate password” to create a secure password.
 
         showPasswordStrength(password);
         updateOutput();
-        startAutoClearTimer(); 
+        startAutoClearTimer();
 
         toggleButton.textContent = "Show password";
 
